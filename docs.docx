@@ -1,0 +1,151 @@
+Eu não consigo gerar arquivos `.docx` diretamente, pois minha saída é apenas em formato de texto.
+
+No entanto, você pode facilmente criar o arquivo `.docx` por conta própria.
+
+### Instruções para criar o arquivo .docx
+
+1.  **Copie** o texto completo abaixo (que eu gerei anteriormente).
+2.  **Abra** seu editor de preferência (como **Microsoft Word**, **Google Docs** ou LibreOffice Writer).
+3.  **Cole** o texto no documento em branco.
+4.  **Formate** o texto como desejar (o Word e o Google Docs possuem ferramentas fáceis para aplicar estilos de Título 1, Título 2, Negrito e blocos de código).
+5.  Vá em `Arquivo > Salvar como...` e escolha o formato `.docx`.
+
+-----
+
+### 📋 Texto para sua documentação
+
+Aqui está o conteúdo pronto para você copiar:
+
+````plaintext
+# Testes
+
+Este documento descreve a estratégia, as ferramentas e as convenções de teste adotadas no [Nome do Projeto]. Nosso objetivo é garantir a qualidade, estabilidade e manutenibilidade do código através de uma cobertura de testes robusta.
+
+## 🏃‍♀️ Como Executar os Testes
+
+Para executar os testes localmente, primeiro certifique-se de que configurou seu [ambiente de desenvolvimento](./DEVELOPMENT.md) e instalou todas as dependências (`npm install` ou `yarn install`).
+
+### Comandos Principais
+
+* **Executar todos os testes (Unitários + Integração):**
+    ```bash
+    npm test
+    ```
+
+* **Executar apenas testes unitários em modo "watch":**
+    (Ideal para desenvolvimento, roda os testes automaticamente a cada mudança)
+    ```bash
+    npm run test:watch
+    ```
+
+* **Executar apenas testes de integração:**
+    ```bash
+    npm run test:integration
+    ```
+
+* **Executar testes End-to-End (E2E) (modo interativo):**
+    (Abre a interface gráfica do Cypress/Playwright)
+    ```bash
+    npm run test:e2e:open
+    ```
+
+* **Executar testes End-to-End (E2E) (modo "headless"):**
+    (Como roda no pipeline de CI, sem interface gráfica)
+    ```bash
+    npm run test:e2e:run
+    ```
+
+* **Verificar cobertura de testes:**
+    (Gera um relatório de cobertura no console e na pasta `/coverage`)
+    ```bash
+    npm run test:coverage
+    ```
+
+## 🛠 Configuração do Ambiente de Teste
+
+### Banco de Dados de Teste
+
+Nossos testes de integração e E2E executam contra um banco de dados de teste separado para garantir o isolamento e evitar a corrupção de dados de desenvolvimento.
+
+1.  **Variáveis de Ambiente:** Copie o arquivo `.env.example` para `.env.test`. Este arquivo deve conter a string de conexão para seu banco de dados de teste.
+    ```bash
+    cp .env.example .env.test
+    ```
+
+2.  **Migrações:** Antes de executar os testes, rode as migrações no banco de teste:
+    ```bash
+    # Exemplo usando Prisma
+    npx prisma migrate dev --schema=./prisma/schema.test.prisma
+    ```
+
+> **Atenção:** O banco de dados de teste é **resetado** (limpo) antes da execução de cada suíte de testes de integração para garantir que os testes sejam independentes.
+
+## 🔬 Tipos de Testes
+
+Utilizamos uma abordagem de testes em múltiplas camadas para validar diferentes aspectos da aplicação.
+
+### 1. Testes Unitários (Unit Tests)
+
+* **O que são:** Testam a menor unidade de código (funções, componentes, classes) de forma isolada.
+* **Ferramenta:** [Jest](https://jestjs.io/) e [React Testing Library](https://testing-library.com/) (para componentes).
+* **Localização:** Ficam ao lado dos arquivos que testam, usando a convenção `*.test.ts` ou `*.test.tsx`.
+* **Exemplo:** `src/components/Button/Button.test.tsx`
+* **Mocks:** Todas as dependências externas (APIs, bancos de dados, módulos) devem ser "mockadas" (simuladas).
+
+### 2. Testes de Integração (Integration Tests)
+
+* **O que são:** Verificam a interação entre múltiplas unidades de código. No backend, isso geralmente significa testar um endpoint da API e sua interação com o banco de dados.
+* **Ferramenta:** [Jest](https://jestjs.io/) (com [Supertest](https://github.com/visionmedia/supertest) para testes de API).
+* **Localização:** Ficam em uma pasta separada, como `tests/integration/`.
+* **Exemplo:** `tests/integration/user-routes.test.ts`
+* **Banco de Dados:** Usam o banco de dados de teste real (PostgreSQL, MySQL, etc.) para validar consultas, transações e *constraints*.
+
+### 3. Testes End-to-End (E2E)
+
+* **O que são:** Simulam o fluxo completo de um usuário na aplicação, interagindo com a interface gráfica no navegador.
+* **Ferramenta:** [Cypress](https://www.cypress.io/) (ou Playwright, Selenium).
+* **Localização:** Ficam na pasta dedicada da ferramenta, como `cypress/e2e/`.
+* **Exemplo:** `cypress/e2e/auth/login.cy.ts` (testa o fluxo de login).
+* **Ambiente:** Executam a aplicação completa (frontend e backend) em um ambiente de teste.
+
+## ✍️ Escrevendo Novos Testes
+
+### Convenções
+
+1.  **Nomenclatura:**
+    * Testes unitários: `nome-do-arquivo.test.ts`
+    * Testes de integração: `nome-do-recurso.integration.test.ts`
+    * Testes E2E (Cypress): `nome-do-fluxo.cy.ts`
+
+2.  **Estrutura (Given-When-Then):** Tente estruturar seus testes de forma legível, seguindo o padrão *Arrange-Act-Assert* (Organizar-Agir-Verificar) ou *Given-When-Then* (Dado-Quando-Então).
+
+    ```javascript
+    describe('NomeDoComponente', () => {
+      it('deve fazer X quando Y acontecer', () => {
+        // Arrange (Given)
+        // Configure o estado inicial, mocks, e renderize o componente
+        const mockFn = jest.fn();
+        render(<Button onClick={mockFn} />);
+
+        // Act (When)
+        // Execute a ação que você quer testar
+        const button = screen.getByRole('button');
+        fireEvent.click(button);
+
+        // Assert (Then)
+        // Verifique se o resultado esperado aconteceu
+        expect(mockFn).toHaveBeenCalledTimes(1);
+      });
+    });
+    ```
+
+3.  **Seletores de E2E:** Para testes E2E, **evite** selecionar elementos por classes CSS ou seletores frágeis. Prefira usar o atributo `data-testid`.
+    * ❌ **Ruim:** `cy.get('.btn-primary')`
+    * ✅ **Bom:** `cy.get('[data-testid="submit-login-button"]')`
+
+## 🚀 Integração Contínua (CI)
+
+Todos os testes (Unitários, Integração e E2E) são executados automaticamente em nosso pipeline de CI ([GitHub Actions](https://github.com/features/actions) / GitLab CI) a cada *push* e *pull request*.
+
+Um *pull request* só pode ser mesclado se **todos os testes passarem** e a **cobertura de testes atingir o mínimo de [80%]%**.
+````
